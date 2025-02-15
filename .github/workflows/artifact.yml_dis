@@ -1,0 +1,31 @@
+name: Artifact
+
+env:
+    PROJECT_NAME: fanqie
+
+on:
+    workflow_run:
+        workflows: ["Build"]
+        types:
+            - completed
+
+jobs:
+    artifact:
+        runs-on: ubuntu-latest
+        steps:
+            - id: commit-hash
+              uses: prompt/actions-commit-hash@v3
+            - name: A
+              run: |
+                  ls ./build/Windows/
+                  ls ./build/Linux/
+            - name: Windows
+              uses: actions/upload-artifact@v4
+              with:
+                  name: Windows-${{ steps.commit-hash.outputs.short }}
+                  path: ./build/Windows/${{ env.PROJECT_NAME }}.dll
+            - name: Linux
+              uses: actions/upload-artifact@v4
+              with:
+                  name: Linux-${{ steps.commit-hash.outputs.short }}
+                  path: ./build/Linux/${{ env.PROJECT_NAME }}.so
